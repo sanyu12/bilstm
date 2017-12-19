@@ -2,3 +2,6 @@ sequence_tagging/
 model/
 pred
 sad
+tmp*
+.idea/
+*__pycache__/

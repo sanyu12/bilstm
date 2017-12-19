@@ -40,6 +40,8 @@ def TagsOneHot(Tags, tag_size):
 # print(WordsVect(["你好","微信"], vect_model))
 # tags = [1,2,3,4,5]
 # # print(TagsOneHot(tags, 10))
-# model = gensim.models.Word2Vec.load('D:/project/bilstm/model/word2vec_from_weixin/word2vec/word2vec_wx')
-# print(model[u'探'])
-# 一九九八年
+# model = gensim.models.Word2Vec.load('../model/word2vec_wx')
+# wv = model.wv
+# del model
+# print(wv[u'探'])
+# wv

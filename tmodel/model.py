@@ -24,7 +24,7 @@ class SRLModel():
         self.dropout = 0
         self.unknown_words = dict()
         self.restore = 0
-        self.learn_rate = 0.01
+        self.learn_rate = 0.002
         self.alg_optim = "adam"
         self.clip_val = 1.25
         # 'D:/project/bilstm/model/word2vec_from_weixin/word2vec_wx'
@@ -193,31 +193,32 @@ class SRLModel():
 
 
     def train(self, train_data, tags, label, rel_loc, nepochs, batch_size, with_val_file=None):
-        self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
-        self.sess = tf.Session()
-        self.sess.run(tf.global_variables_initializer())
-        self.saver = tf.train.Saver()
-        # batch_size = batch_size
-        # nbatches = (len(train) + batch_size - 1) // batch_size
+        self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
+        with tf.device("/gpu:10"):
+            self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
+            self.sess.run(tf.global_variables_initializer())
+            self.saver = tf.train.Saver()
+            # batch_size = batch_size
+            # nbatches = (len(train) + batch_size - 1) // batch_size
 
-        print('Initialized')
-        mean_loss = 0
-        for epchs in range(nepochs):
-            batch_seq, labels = self.next_batch(batch_size, train_data, tags, rel_loc, label)
-            feed_dict, _ = self.get_feed_dict(self.pad_tok, batch_seq, labels)
-            _, train_loss = self.sess.run(
-                [self.opt, self.loss], feed_dict=feed_dict)
-            mean_loss += train_loss
-            if (epchs + 1) % 100 == 0:
-                print(epchs, " ", "mean train loss: ", mean_loss / (epchs + 1))
-                if with_val_file:
-                    self.run_evaluate(100, with_val_file)
+            print('Initialized')
+            mean_loss = 0
+            for epchs in range(nepochs):
+                batch_seq, labels = self.next_batch(batch_size, train_data, tags, rel_loc, label)
+                feed_dict, _ = self.get_feed_dict(self.pad_tok, batch_seq, labels)
+                _, train_loss = self.sess.run(
+                    [self.opt, self.loss], feed_dict=feed_dict)
+                mean_loss += train_loss
+                if (epchs ) % 400 == 0 and epchs != 0:
+                    print(epchs, " ", "mean train loss: ", mean_loss / (epchs + 1))
+                    if with_val_file:
+                        self.run_evaluate(100, with_val_file)
 
-            if epchs % 50 == 0:
-                print(epchs, " ", "train loss: ", train_loss)
+                if epchs % 50 == 0:
+                    print(epchs, " ", "train loss: ", train_loss)
 
-            if ( epchs + 1) % 100 == 0:
-                self.save_session("tmp_model_" + str(epchs))
+                if ( epchs ) % 400 == 0 and epchs != 0:
+                    self.save_session("tmp_200_lr0.02_model_" + str(epchs))
 
 
     def retrain(self, dir_model, train_data, tags, label, rel_loc, nepochs, batch_size, with_val_file=None):
@@ -239,19 +240,20 @@ class SRLModel():
             if epchs % 500 == 0:
                 print("mean train loss: ", mean_loss / (epchs + 1))
                 if with_val_file:
-                    self.run_evaluate(100, with_val_file)
+                    self.run_evaluate(100, with_val_file+ "_" + str(epchs))
             if epchs % 50 == 0:
                 print("train loss: ", train_loss)
 
     # predict
     def predict(self, test, tags, rel_loc, batch_size):
         # assert self.unknown_words is not None
-        self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
-        feed_dict = dict()
-        batch_test = self.load_test(test, tags, rel_loc)
-        nbatches = len(test) // batch_size
-        viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, batch_test)
-        return viterbi_sequences, seq_lengths
+        with tf.device("/cpu:0"):
+            self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
+            feed_dict = dict()
+            batch_test = self.load_test(test, tags, rel_loc)
+            nbatches = len(test) // batch_size
+            viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, batch_test)
+            return viterbi_sequences, seq_lengths
 
 
     def _predict_batch(self, batch_data):
@@ -290,17 +292,16 @@ class SRLModel():
 
 
     def restoreModel(self, dir_model):
+        self.saver = tf.train.import_meta_graph(dir_model + ".meta")
         self.sess = tf.Session()
         with open(dir_model + ".unknown", 'rb') as f:
-            pickle.load(self.unknown_words, f)
+            self.unknown_words = pickle.load(f)
         self.saver.restore(self.sess, dir_model)
         self.restore = 1
 
 
     def save_session(self, dir_model):
         """Saves session = weights"""
-        if not os.path.exists(dir_model):
-            os.makedirs(dir_model)
         with open(dir_model + ".unknown", 'wb') as f:
             pickle.dump(self.unknown_words, f)
         self.saver.save(self.sess, dir_model)
@@ -316,11 +317,12 @@ class SRLModel():
         print("Begin Run evaluate: ")
         nbatches = len(self.test_data) // batch_size
         viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, self.test_data)
-        self.evaluate("pred", filename, self.label_to_tag, viterbi_sequences,
+        self.evaluate("pred_200_lr0.02", filename, viterbi_sequences,
                       seq_lengths, self.test_raw_data, self.test_raw_tags)
 
 
-    def evaluate(self, filename, dev_file, vit_dic, viterbi_seq, seq_length, val_data, val_tags):
+    def evaluate(self, filename, dev_file, viterbi_seq, seq_length, val_data, val_tags, ref_seq=None):
+        vit_dic = self.label_to_tag
         assert len(viterbi_seq) == len(seq_length) == len(val_data) == len(val_tags)
         with open(filename, 'w', encoding="utf-8") as f:
             for num in range(len(viterbi_seq)):
@@ -328,14 +330,21 @@ class SRLModel():
                 sl = seq_length[num]
                 vt = val_tags[num]
                 vd = val_data[num]
+                if ref_seq:
+                    rel = ref_seq[num]
                 str = ""
                 for it in range(sl - 1):
+                    if ref_seq and vit_dic[seq[it]] == 'rel' :
+                        if vd[it] != rel:
+                            vd[it] = 'O'
+                    if ref_seq and vd[it] == rel:
+                        if vit_dic[seq[it]] != 'rel':
+                            seq[it] = 1
                     str += "%s/%s/%s " % (vd[it], vt[it], vit_dic[seq[it]])
                 str += "%s/%s/%s\n" % (vd[sl - 1], vt[sl - 1], vit_dic[seq[sl - 1]])
                 f.write(str)
 
-        print(calc_f1(filename, dev_file))
-
+        # print(calc_f1(filename, dev_file)) F: 0.6530078465562337
 
 
 
