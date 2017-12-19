@@ -36,8 +36,8 @@ t_dic, t_idx, l_dic, l_idx = calc_idx([train_data, val_data, test_data])
 print(l_dic)
 s, t, l, rel = prepocess.build_data(train_data)
 
-srl_model = SRLModel('D:/project/bilstm/model/word2vec_from_weixin/word2vec/word2vec_wx',
-                 labels=l_dic, embedding_size=256, hidden_layer=50, nlabels=len(l_idx),
+srl_model = SRLModel('./model/word2vec_wx',
+                 labels=l_dic, embedding_size=256, hidden_layer=200, nlabels=len(l_idx),
                  tag_size=len(t_idx), pad_tok=0)
 
 train_tags = get_idx(t, t_dic)
@@ -50,7 +50,7 @@ val_label_int = get_idx(val_label, l_dic)
 srl_model.load_test(val_seq, val_tag_int, val_rel, val_label_int, val_tags)
 
 # train
-srl_model.train(s, train_tags, train_labels, rel, 10000, 100,
+srl_model.train(s, train_tags, train_labels, rel, 100000, 200,
                 'D:/project/bilstm/cpbdev.txt')
 # save
 srl_model.save_session("srlmodel")

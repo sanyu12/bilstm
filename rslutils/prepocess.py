@@ -72,23 +72,35 @@ def build_data(data, test=False):
         rel_locs.append(rel_loc)
     return  sentence, label, tag, rel_locs
 
-def _pad_sequences(sequences, pad_tok, max_length):
-    """
-    Args:
-        sequences: a generator of list or tuple
-        pad_tok: the char to pad with
-
-    Returns:
-        a list of list where each sublist has same length
-    """
-    sequence_padded, sequence_length = [], []
-
-    for seq in sequences:
-        seq = list(seq)
-        seq_ = seq[:max_length] + [pad_tok]*max(max_length - len(seq), 0)
-        sequence_padded +=  [seq_]
-        sequence_length += [min(len(seq), max_length)]
-
-    return sequence_padded, sequence_length
+    # B E
+def check_validity(pred_file):
+    preds = [pred.split() for pred in open(pred_file, 'r', encoding="utf-8").read().strip().split('\n')]
+    num = 0
+    for pred in preds:
+        num += 1
+        lastname = ''
+        keys_pred = dict()
+        for item in pred:
+            word, label = item.split('/')[0], item.split('/')[-1]
+            flag, name = label[:label.find('-')], label[label.find('-') + 1:]
+            if flag == 'O':
+                continue
+            if flag == 'S':
+                if name not in keys_pred:
+                    keys_pred[name] = [word]
+                else:
+                    keys_pred[name].append(word)
+            else:
+                if flag == 'B':
+                    if name not in keys_pred:
+                        keys_pred[name] = [word]
+                    else:
+                        keys_pred[name].append(word)
+                    lastname = name
+                elif flag == 'I' or flag == 'E':
+                    if name == lastname : # "the I-/E- labels are inconsistent with B- labels in pred file."
+                        keys_pred[name][-1] += ' ' + word
+                    else:
+                        print("ids: ", num, " ",word)
 
 
