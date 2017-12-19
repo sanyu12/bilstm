@@ -3,5 +3,5 @@ model/
 pred
 sad
 tmp*
-.idea/
+.idea*/*
 *__pycache__/

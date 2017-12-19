@@ -24,9 +24,10 @@ class SRLModel():
         self.dropout = 0
         self.unknown_words = dict()
         self.restore = 0
-        self.learn_rate = 0.002
+        self.learn_rate = 0.01
         self.alg_optim = "adam"
         self.clip_val = 1.25
+        self.last_loss = 0.0001
         # 'D:/project/bilstm/model/word2vec_from_weixin/word2vec_wx'
         model = gensim.models.Word2Vec.load(model_file)
         self.model_vectors = model.wv
@@ -78,7 +79,8 @@ class SRLModel():
             self.test_data = batches
             self.test_label = rlabels
             self.test_raw_data = test
-            self.test_raw_tags = raw_tags
+            if raw_tags:
+                self.test_raw_tags = raw_tags
             return batches, rlabels
         else:
             return self.test_data, self.test_label
@@ -194,7 +196,7 @@ class SRLModel():
 
     def train(self, train_data, tags, label, rel_loc, nepochs, batch_size, with_val_file=None):
         self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
-        with tf.device("/gpu:10"):
+        with tf.device("/gpu:0"):
             self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
             self.sess.run(tf.global_variables_initializer())
             self.saver = tf.train.Saver()
@@ -209,15 +211,20 @@ class SRLModel():
                 _, train_loss = self.sess.run(
                     [self.opt, self.loss], feed_dict=feed_dict)
                 mean_loss += train_loss
-                if (epchs ) % 400 == 0 and epchs != 0:
+                if (epchs ) % 200 == 0 and epchs != 0:
                     print(epchs, " ", "mean train loss: ", mean_loss / (epchs + 1))
                     if with_val_file:
-                        self.run_evaluate(100, with_val_file)
+                        if self.last_loss == 0.0001:
+                            self.last_loss = train_loss
+                            self.run_evaluate(100, "pred_" + str(train_loss), with_val_file)
+                        elif self.last_loss > train_loss:
+                            self.last_loss = train_loss
+                            self.run_evaluate(100, "pred_"+ str(train_loss), with_val_file)
 
                 if epchs % 50 == 0:
                     print(epchs, " ", "train loss: ", train_loss)
 
-                if ( epchs ) % 400 == 0 and epchs != 0:
+                if ( epchs ) % 2000 == 0 and epchs != 0:
                     self.save_session("tmp_200_lr0.02_model_" + str(epchs))
 
 
@@ -245,15 +252,15 @@ class SRLModel():
                 print("train loss: ", train_loss)
 
     # predict
-    def predict(self, test, tags, rel_loc, batch_size):
+    def predict(self, test, tags, rel_loc, raw_tags,  batch_size):
         # assert self.unknown_words is not None
-        with tf.device("/cpu:0"):
-            self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
-            feed_dict = dict()
-            batch_test = self.load_test(test, tags, rel_loc)
-            nbatches = len(test) // batch_size
-            viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, batch_test)
-            return viterbi_sequences, seq_lengths
+        # with tf.device("/cpu:0"):
+        self.sess.run(tf.global_variables_initializer())
+        feed_dict = dict()
+        batch_test, _ = self.load_test(test, tags, rel_loc, raw_tags=raw_tags)
+        nbatches = len(test) // batch_size
+        viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, batch_test)
+        return viterbi_sequences, seq_lengths
 
 
     def _predict_batch(self, batch_data):
@@ -291,12 +298,13 @@ class SRLModel():
         return viterbi_sequences, seq_lengths
 
 
-    def restoreModel(self, dir_model):
+    def restoreModel(self, dir_model, batch_size):
+        self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
         self.saver = tf.train.import_meta_graph(dir_model + ".meta")
-        self.sess = tf.Session()
+        self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
         with open(dir_model + ".unknown", 'rb') as f:
             self.unknown_words = pickle.load(f)
-        self.saver.restore(self.sess, dir_model)
+        self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))
         self.restore = 1
 
 
@@ -312,12 +320,12 @@ class SRLModel():
         self.sess.close()
 
     # run_evaluate
-    def run_evaluate(self, batch_size, filename):
+    def run_evaluate(self, batch_size, ori_file, filename ):
         assert len(self.test_data) > 0 and len(self.test_raw_data) > 0
         print("Begin Run evaluate: ")
         nbatches = len(self.test_data) // batch_size
         viterbi_sequences, seq_lengths = self._predict(nbatches, batch_size, self.test_data)
-        self.evaluate("pred_200_lr0.02", filename, viterbi_sequences,
+        self.evaluate(ori_file, filename, viterbi_sequences,
                       seq_lengths, self.test_raw_data, self.test_raw_tags)
 
 

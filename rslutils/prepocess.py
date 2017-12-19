@@ -41,7 +41,7 @@ def WordSplit(Str, train=True):
         tmp.append("".join(sp[0]))
         wordAttr.append(sp[1])
         if train:
-            if sp[2]== 'rel':
+            if sp[2] == 'rel':
                 rel_loc.append(sp[0])
             labels.append(sp[2])
         else:

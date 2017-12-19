@@ -38,19 +38,20 @@ t_dic, t_idx, l_dic, l_idx = calc_idx([train_data, val_data, test_data])
 print(l_dic)
 
 srl_model = SRLModel('./model/word2vec_wx',
-                 labels=l_dic, embedding_size=256, hidden_layer=100, nlabels=len(l_idx),
+                 labels=l_dic, embedding_size=256, hidden_layer=200, nlabels=len(l_idx),
                  tag_size=len(t_idx), pad_tok=0)
 
 # test data loader
 test_seq, test_tags, _, test_rel = prepocess.build_data(test_data, test=True)
 test_tag_int = get_idx(test_tags, t_dic)
-
-srl_model.restoreModel("tmp_2_model_2000")
+# batch_test, _ = srl_model.load_test(test_seq, test_tag_int, test_rel, raw_tags=test_tags)
+# feed_dict, sequence_lengths = srl_model.get_feed_dict(0, batch_test)
+srl_model.restoreModel("tmp_200_model_6000", 100)
 #
-viterbi_sequences, seq_lengths = srl_model.predict(test_seq, test_tag_int, test_rel, 100)
+viterbi_sequences, seq_lengths = srl_model.predict(test_seq, test_tag_int, test_rel, test_tags, 100)
 
 # filename, dev_file, viterbi_seq, seq_length, val_data, val_tags
-srl_model.evaluate("pred_test", "null", viterbi_sequences, seq_lengths, test_data, test_tags)
+srl_model.evaluate("pred_test", "null", viterbi_sequences, seq_lengths, test_seq, test_tags)
 
 
 # with open("res", "wb") as f:

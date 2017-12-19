@@ -44,10 +44,10 @@ train_tags = get_idx(t, t_dic)
 train_labels = get_idx(l, l_dic)
 
 # test data loader
-val_seq, val_tags, val_label, val_rel = prepocess.build_data(val_data)
+val_seq, val_tags, _, val_rel = prepocess.build_data(test_data, test=True)
 val_tag_int = get_idx(val_tags, t_dic)
-val_label_int = get_idx(val_label, l_dic)
-srl_model.load_test(val_seq, val_tag_int, val_rel, val_label_int, val_tags)
+# val_label_int = get_idx(val_label, l_dic)
+srl_model.load_test(val_seq, val_tag_int, val_rel, raw_tags=val_tags)
 
 # train
 srl_model.train(s, train_tags, train_labels, rel, 100000, 200,
