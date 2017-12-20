@@ -4,4 +4,6 @@ pred
 sad
 tmp*
 .idea*/*
+pred*
 *__pycache__/
+srlmodel.*

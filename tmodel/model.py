@@ -25,7 +25,7 @@ class SRLModel():
         self.unknown_words = dict()
         self.restore = 0
         self.learn_rate = 0.01
-        self.alg_optim = "adam"
+        self.alg_optim = "adagrad"
         self.clip_val = 1.25
         self.last_loss = 0.0001
         # 'D:/project/bilstm/model/word2vec_from_weixin/word2vec_wx'
@@ -144,6 +144,10 @@ class SRLModel():
 
         cell_fw = tf.contrib.rnn.LSTMCell(self.hidden_layer)
         cell_bw = tf.contrib.rnn.LSTMCell(self.hidden_layer)
+
+        cell_fw_1 = tf.contrib.rnn.LSTMCell(self.hidden_layer)
+        cell_bw_1 = tf.contrib.rnn.LSTMCell(self.hidden_layer)
+
         (output_fw, output_bw), _ = tf.nn.bidirectional_dynamic_rnn(
             cell_fw, cell_bw, self.word_data, sequence_length=self.sequence_lengths, dtype=tf.float32)
         output = tf.concat([output_fw, output_bw], axis=-1)
@@ -164,6 +168,7 @@ class SRLModel():
         log_likelihood, trans_params = tf.contrib.crf.crf_log_likelihood(self.logits, self.labels, self.sequence_lengths)
         self.trans_params = trans_params  # need to evaluate it for decoding
         self.loss = tf.reduce_mean(-log_likelihood)
+
 
         # Optimizer.
         _lr_m = lr_method.lower()
@@ -216,16 +221,17 @@ class SRLModel():
                     if with_val_file:
                         if self.last_loss == 0.0001:
                             self.last_loss = train_loss
-                            self.run_evaluate(100, "pred_" + str(train_loss), with_val_file)
+                            self.run_evaluate(100, "pred_adagrad" + str(train_loss), with_val_file)
                         elif self.last_loss > train_loss:
                             self.last_loss = train_loss
-                            self.run_evaluate(100, "pred_"+ str(train_loss), with_val_file)
+                            self.run_evaluate(100, "pred_adagrad"+ str(train_loss), with_val_file)
+                            self.save_session("tmp_adagrad_" + str(train_loss))
 
                 if epchs % 50 == 0:
                     print(epchs, " ", "train loss: ", train_loss)
 
-                if ( epchs ) % 2000 == 0 and epchs != 0:
-                    self.save_session("tmp_200_lr0.02_model_" + str(epchs))
+                # if ( epchs ) % 2000 == 0 and epchs != 0:
+                #     self.save_session("tmp_adagrad_" + str(epchs))
 
 
     def retrain(self, dir_model, train_data, tags, label, rel_loc, nepochs, batch_size, with_val_file=None):
