@@ -20,12 +20,13 @@ class SRLModel():
         self.test_data = []
         self.test_raw_data = []
         self.test_raw_tags = []
+        self.test_rel_loc = []
         self.test_label = 0
         self.dropout = 0
         self.unknown_words = dict()
         self.restore = 0
         self.learn_rate = 0.01
-        self.alg_optim = "adagrad"
+        self.alg_optim = "adam"
         self.clip_val = 1.25
         self.last_loss = 0.0001
         # 'D:/project/bilstm/model/word2vec_from_weixin/word2vec_wx'
@@ -79,6 +80,7 @@ class SRLModel():
             self.test_data = batches
             self.test_label = rlabels
             self.test_raw_data = test
+            self.test_rel_loc = rel_loc
             if raw_tags:
                 self.test_raw_tags = raw_tags
             return batches, rlabels
@@ -261,7 +263,6 @@ class SRLModel():
     def predict(self, test, tags, rel_loc, raw_tags,  batch_size):
         # assert self.unknown_words is not None
         # with tf.device("/cpu:0"):
-        self.sess.run(tf.global_variables_initializer())
         feed_dict = dict()
         batch_test, _ = self.load_test(test, tags, rel_loc, raw_tags=raw_tags)
         nbatches = len(test) // batch_size
@@ -308,6 +309,7 @@ class SRLModel():
         self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
         self.saver = tf.train.import_meta_graph(dir_model + ".meta")
         self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
+        self.sess.run(tf.global_variables_initializer())
         with open(dir_model + ".unknown", 'rb') as f:
             self.unknown_words = pickle.load(f)
         self.saver.restore(self.sess, tf.train.latest_checkpoint('./'))

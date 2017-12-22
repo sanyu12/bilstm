@@ -1,4 +1,4 @@
-model_checkpoint_path: "tmp_200_lr0.02_model_16000"
+model_checkpoint_path: "tmp_200_model_6000"
 all_model_checkpoint_paths: "tmp_200_lr0.02_model_8000"
 all_model_checkpoint_paths: "tmp_200_lr0.02_model_10000"
 all_model_checkpoint_paths: "tmp_200_lr0.02_model_12000"

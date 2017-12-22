@@ -51,7 +51,7 @@ srl_model.restoreModel("tmp_200_model_6000", 100)
 viterbi_sequences, seq_lengths = srl_model.predict(test_seq, test_tag_int, test_rel, test_tags, 100)
 
 # filename, dev_file, viterbi_seq, seq_length, val_data, val_tags
-srl_model.evaluate("pred_test", "null", viterbi_sequences, seq_lengths, test_seq, test_tags)
+srl_model.evaluate("pred_test_200000", "null", viterbi_sequences, seq_lengths, test_seq, test_tags)
 
 
 # with open("res", "wb") as f:
