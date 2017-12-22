@@ -50,7 +50,7 @@ val_label_int = get_idx(val_label, l_dic)
 srl_model.load_test(val_seq, val_tag_int, val_rel, val_label_int, raw_tags=val_tags)
 
 # train
-srl_model.train(s, train_tags, train_labels, rel, 5000, 200,
+srl_model.train(s, train_tags, train_labels, rel, 10000, 200,
                 'D:/project/bilstm/cpbdev.txt')
 # save
 srl_model.save_session("srlmodel")
