@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1a3a6233-3c8e-4a1c-9c10-84a3463f5a74" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/tmodel/model.py" afterPath="$PROJECT_DIR$/tmodel/model.py" />
       <change beforePath="$PROJECT_DIR$/train.py" afterPath="$PROJECT_DIR$/train.py" />
-      <change beforePath="$PROJECT_DIR$/train_val.py" afterPath="$PROJECT_DIR$/train_val.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,10 +21,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tmodel/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-503">
+            <state relative-caret-position="-41">
               <caret line="203" column="8" lean-forward="false" selection-start-line="203" selection-start-column="8" selection-end-line="203" selection-end-column="8" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
@@ -36,48 +36,8 @@
       <file leaf-file-name="train_val.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_val.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
-              <caret line="52" column="12" lean-forward="false" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="cpbdev.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cpbdev.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="136" column="123" lean-forward="false" selection-start-line="136" selection-start-column="117" selection-end-line="136" selection-end-column="123" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="checkpoint" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/checkpoint">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="42" lean-forward="false" selection-start-line="0" selection-start-column="42" selection-end-line="0" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/train.py">
-          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="605">
-              <caret line="52" column="12" lean-forward="true" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="predict.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/predict.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="341">
-              <caret line="50" column="45" lean-forward="true" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
+              <caret line="52" column="14" lean-forward="false" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -120,10 +80,10 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/rslutils/prepocess.py" />
         <option value="$PROJECT_DIR$/checkpoint" />
-        <option value="$PROJECT_DIR$/tmodel/model.py" />
         <option value="$PROJECT_DIR$/predict.py" />
         <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/train_val.py" />
+        <option value="$PROJECT_DIR$/tmodel/model.py" />
       </list>
     </option>
   </component>
@@ -710,14 +670,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/checkpoint">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="42" lean-forward="false" selection-start-line="0" selection-start-column="42" selection-end-line="0" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cpbdev.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
@@ -726,37 +678,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train_val.py">
+    <entry file="file://$PROJECT_DIR$/predict.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="52" column="12" lean-forward="false" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="12" />
+        <state relative-caret-position="341">
+          <caret line="50" column="45" lean-forward="true" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/checkpoint">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="38" lean-forward="false" selection-start-line="0" selection-start-column="38" selection-end-line="0" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/train.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="629">
+          <caret line="52" column="13" lean-forward="false" selection-start-line="52" selection-start-column="13" selection-end-line="52" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train_val.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="605">
-          <caret line="52" column="12" lean-forward="true" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="12" />
+          <caret line="52" column="14" lean-forward="false" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tmodel/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-503">
+        <state relative-caret-position="-41">
           <caret line="203" column="8" lean-forward="false" selection-start-line="203" selection-start-column="8" selection-end-line="203" selection-end-column="8" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/predict.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="50" column="45" lean-forward="true" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
     </entry>

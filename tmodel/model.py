@@ -223,11 +223,11 @@ class SRLModel():
                     if with_val_file:
                         if self.last_loss == 0.0001:
                             self.last_loss = train_loss
-                            self.run_evaluate(100, "pred_adagrad" + str(train_loss), with_val_file)
+                            self.run_evaluate(100, "pred_bilstm_200_" + str(train_loss), with_val_file)
                         elif self.last_loss > train_loss:
                             self.last_loss = train_loss
-                            self.run_evaluate(100, "pred_adagrad"+ str(train_loss), with_val_file)
-                            self.save_session("tmp_adagrad_" + str(train_loss))
+                            self.run_evaluate(100, "pred_bilstm_200_"+ str(train_loss), with_val_file)
+                            self.save_session("pred_bilstm_200_" + str(train_loss))
 
                 if epchs % 50 == 0:
                     print(epchs, " ", "train loss: ", train_loss)
