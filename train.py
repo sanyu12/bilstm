@@ -28,31 +28,40 @@ def get_idx(data, data_dict):
         id.append(seq_id)
     return id
 
-train_data = prepocess.ReadFunc(u"./data/cpbtrain.txt")
-val_data = prepocess.ReadFunc(u"./data/cpbdev.txt")
-test_data = prepocess.ReadFunc("./data/cpbtest.txt")
 
-t_dic, t_idx, l_dic, l_idx = calc_idx([train_data, val_data, test_data])
-print(l_dic)
-s, t, l, rel = prepocess.build_data(train_data)
+import sys
+if __name__ == '__main__':
 
-srl_model = SRLModel('./model/word2vec_wx',
-                 labels=l_dic, embedding_size=256, hidden_layer=200, nlabels=len(l_idx),
-                 tag_size=len(t_idx), pad_tok=0)
+    if len(sys.argv[1:]) != 2:
+        print('the function takes exactly two parameters: pred_file and gold_file')
 
-train_tags = get_idx(t, t_dic)
-train_labels = get_idx(l, l_dic)
+    epoch = int(sys.argv[1])
+    batch_size = int(sys.argv[2])
 
-# test data loader
-val_seq, val_tags, _, val_rel = prepocess.build_data(test_data, test=True)
-val_tag_int = get_idx(val_tags, t_dic)
-# val_label_int = get_idx(val_label, l_dic)
-srl_model.load_test(val_seq, val_tag_int, val_rel, raw_tags=val_tags)
+    train_data = prepocess.ReadFunc(u"./data/cpbtrain.txt")
+    val_data = prepocess.ReadFunc(u"./data/cpbdev.txt")
+    test_data = prepocess.ReadFunc("./data/cpbtest.txt")
 
-# train
-srl_model.train(s, train_tags, train_labels, rel, 10000, 200,
-                'D:/project/bilstm/cpbdev.txt')
-# save
-srl_model.save_session("srlmodel")
+    t_dic, t_idx, l_dic, l_idx = calc_idx([train_data, val_data, test_data])
+    print(l_dic)
+    s, t, l, rel = prepocess.build_data(train_data)
 
-srl_model.close_session()
+    srl_model = SRLModel('./model/word2vec_wx',
+                         labels=l_dic, embedding_size=256, hidden_layer=200, nlabels=len(l_idx),
+                         tag_size=len(t_idx), pad_tok=0)
+
+    train_tags = get_idx(t, t_dic)
+    train_labels = get_idx(l, l_dic)
+
+    # test data loader
+    val_seq, val_tags, _, val_rel = prepocess.build_data(test_data, test=True)
+    val_tag_int = get_idx(val_tags, t_dic)
+    # val_label_int = get_idx(val_label, l_dic)
+    srl_model.load_test(val_seq, val_tag_int, val_rel, raw_tags=val_tags)
+
+    # train
+    srl_model.train(s, train_tags, train_labels, rel, epoch, batch_size, 'value')
+    # save
+    srl_model.save_session("srlmodel")
+
+    srl_model.close_session()

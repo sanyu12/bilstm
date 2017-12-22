@@ -262,7 +262,7 @@ class SRLModel():
     # predict
     def predict(self, test, tags, rel_loc, raw_tags,  batch_size):
         # assert self.unknown_words is not None
-        # with tf.device("/cpu:0"):
+        self.sess.run(tf.global_variables_initializer())
         feed_dict = dict()
         batch_test, _ = self.load_test(test, tags, rel_loc, raw_tags=raw_tags)
         nbatches = len(test) // batch_size
@@ -307,8 +307,8 @@ class SRLModel():
 
     def restoreModel(self, dir_model, batch_size):
         self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
-        self.saver = tf.train.import_meta_graph(dir_model + ".meta")
         self._build_tf(batch_size, self.alg_optim, self.learn_rate, self.clip_val)
+        self.saver = tf.train.import_meta_graph(dir_model + ".meta")
         self.sess.run(tf.global_variables_initializer())
         with open(dir_model + ".unknown", 'rb') as f:
             self.unknown_words = pickle.load(f)

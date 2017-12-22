@@ -1,6 +1,4 @@
-model_checkpoint_path: "tmp_200_model_6000"
-all_model_checkpoint_paths: "tmp_200_lr0.02_model_8000"
-all_model_checkpoint_paths: "tmp_200_lr0.02_model_10000"
-all_model_checkpoint_paths: "tmp_200_lr0.02_model_12000"
-all_model_checkpoint_paths: "tmp_200_lr0.02_model_14000"
-all_model_checkpoint_paths: "tmp_200_lr0.02_model_16000"
+model_checkpoint_path: "pred_bilstm_200_0.731599"
+all_model_checkpoint_paths: "pred_bilstm_200_0.696517"
+all_model_checkpoint_paths: "pred_bilstm_200_0.862165"
+
